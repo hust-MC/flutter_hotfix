@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dyna/dyna_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -6,7 +7,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-  // This widget is
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: DynaWidget(src: 'assets/dyna/main.json'),
     );
   }
 }
@@ -99,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              // style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
