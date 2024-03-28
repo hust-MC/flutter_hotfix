@@ -1,5 +1,8 @@
-import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:dyna_flutter/builder/ast_key.dart';
+
+import 'ast_name.dart';
 
 class AstVisitor extends SimpleAstVisitor<Map> {
   @override
@@ -8,7 +11,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     if (body.isEmpty) {
       return null;
     }
-    return {'node': 'Unit', 'body': body};
+    return {AstKey.NODE: 'Unit', AstKey.BODY: body};
   }
 
   @override
@@ -16,29 +19,29 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var id = node.name.accept(this);
     var expression = node.functionExpression.accept(this);
 
-    return {'node': 'FunctionDeclaration', 'id': id, 'expression': expression};
+    return {AstKey.NODE: 'FunctionDeclaration', AstKey.ID: id, AstKey.EXPRESSION: expression};
   }
 
   @override
   Map visitSimpleIdentifier(SimpleIdentifier node) {
     var name = node.name;
-    return {'node': 'Identifier', 'name': name};
+    return {AstKey.NODE: 'Identifier', AstKey.NAME: name};
   }
 
   @override
   Map visitFunctionExpression(FunctionExpression node) {
     return {
-      'node': 'FunctionExpression',
-      'parameters': node.parameters?.accept(this),
-      'body': node.body.accept(this),
-      'isAsync': node.body.isAsynchronous
+      AstKey.NODE: 'FunctionExpression',
+      AstKey.PARAMETERS: node.parameters?.accept(this),
+      AstKey.BODY: node.body.accept(this),
+      AstKey.IS_ASYNC: node.body.isAsynchronous
     };
   }
 
   @override
   Map visitBlock(Block node) {
     var statements = accept(node.statements, this);
-    return {'node': 'Block', 'statements': statements};
+    return {AstKey.NODE: 'Block', AstKey.STATEMENTS: statements};
   }
 
   @override
@@ -49,7 +52,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   @override
   Map visitFormalParameterList(FormalParameterList node) {
     var parameters = accept(node.parameters, this);
-    return {'node': 'FormalParameterList', 'parameters': parameters};
+    return {AstKey.NODE: 'FormalParameterList', AstKey.PARAMETERS: parameters};
   }
 
   @override
@@ -62,13 +65,13 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var metadata = accept(node.metadata, this);
 
     return {
-      'node': 'ClassDeclaration',
-      'id': name,
-      'extendsClause': extendsClause,
-      'implementsClause': implementsClause,
-      'withClause': withClause,
-      'members': members,
-      'metadata': metadata
+      AstKey.NODE: 'ClassDeclaration',
+      AstKey.ID: name,
+      AstKey.EXTENDS_CLAUSE: extendsClause,
+      AstKey.IMPLEMENTS_CLAUSE: implementsClause,
+      AstKey.WITH_CLAUSE: withClause,
+      AstKey.MEMBERS: members,
+      AstKey.METADATA: metadata
     };
   }
 
@@ -80,13 +83,13 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   @override
   Map visitNamedType(NamedType node) {
     var name = node.name.name;
-    return {'node': 'NamedType', 'name': name};
+    return {AstKey.NODE: 'NamedType', AstKey.NAME: name};
   }
 
   @override
   Map visitImplementsClause(ImplementsClause node) {
     var interfaces = accept(node.interfaces2, this);
-    return {'node': 'ImplementsClause', 'interfaces': interfaces};
+    return {AstKey.NODE: AstKey.IMPLEMENTS_CLAUSE, AstKey.INTERFACES: interfaces};
   }
 
   @override
@@ -106,15 +109,15 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var source = node.toSource();
 
     return {
-      'node': 'MethodDeclaration',
-      'id': id,
-      'parameters': parameters,
-      'typeParameters': typeParameters,
-      'body': body,
-      'isAsync': isAsync,
-      'returnType': returnType,
-      'annotations': annotations,
-      'source': source
+      AstKey.NODE: 'MethodDeclaration',
+      AstKey.ID: id,
+      AstKey.PARAMETERS: parameters,
+      AstKey.TYPE_PARAMETERS: typeParameters,
+      AstKey.BODY: body,
+      AstKey.IS_ASYNC: isAsync,
+      AstKey.RETURN_TYPE: returnType,
+      AstKey.ANNOTATIONS: annotations,
+      AstKey.SOURCE: source
     };
   }
 
@@ -126,9 +129,9 @@ class AstVisitor extends SimpleAstVisitor<Map> {
       method = node.methodName.accept(this);
     } else {
       method = {
-        'node': 'MethodTarget',
-        'target': node.target?.accept(this),
-        'methodName': node.methodName.accept(this)
+        AstKey.NODE: 'MethodTarget',
+        AstKey.TARGET: node.target?.accept(this),
+        AstKey.METHOD_NAME: node.methodName.accept(this)
       };
     }
 
@@ -136,10 +139,10 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var argumentList = node.argumentList.accept(this);
 
     return {
-      'node': 'MethodInvocation',
-      'method': method,
-      'typeArguments': typeArguments,
-      'argumentList': argumentList
+      AstKey.NODE: 'MethodInvocation',
+      AstKey.METHOD: method,
+      AstKey.TYPE_ARGUMENTS: typeArguments,
+      AstKey.ARGUMENT_LIST: argumentList
     };
   }
 
@@ -149,9 +152,9 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var init = node.initializer?.accept(this);
 
     return {
-      'node': 'VariableDeclaration',
-      'id': id,
-      'init': init,
+      AstKey.NODE: 'VariableDeclaration',
+      AstKey.ID: id,
+      AstKey.INIT: init,
     };
   }
 
@@ -163,11 +166,11 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var source = node.toSource();
 
     return {
-      'node': 'VariableDeclarationList',
-      'variables': variables,
-      'annotations': annotations,
-      'type': type,
-      'source': source
+      AstKey.NODE: 'VariableDeclarationList',
+      AstKey.VARIABLES: variables,
+      AstKey.ANNOTATIONS: annotations,
+      AstKey.TYPE: type,
+      AstKey.SOURCE: source
     };
   }
 
@@ -179,11 +182,11 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var source = node.toSource();
 
     return {
-      'node': 'FieldDeclaration',
-      'type': type,
-      'variables': variables,
-      'annotations': annotations,
-      'source': source
+      AstKey.NODE: 'FieldDeclaration',
+      AstKey.TYPE: type,
+      AstKey.VARIABLES: variables,
+      AstKey.ANNOTATIONS: annotations,
+      AstKey.SOURCE: source
     };
   }
 
@@ -192,20 +195,20 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var name = node.name.accept(this);
     var argumentList = node.arguments?.accept(this);
 
-    return {'node': 'Annotation', 'id': name, 'argumentList': argumentList};
+    return {AstKey.NODE: 'Annotation', AstKey.ID: name, AstKey.ARGUMENT_LIST: argumentList};
   }
 
   @override
   Map visitStringInterpolation(StringInterpolation node) {
-    return {'node': 'StringInterpolation', 'sourceString': node.toSource()};
+    return {AstKey.NODE: 'StringInterpolation', 'sourceString': node.toSource()};
   }
 
   @override
   Map visitPostfixExpression(PostfixExpression node) {
     return {
-      'node': 'PostfixExpression',
-      'operand': node.operand.accept(this),
-      'operator': node.operator.toString()
+      AstKey.NODE: 'PostfixExpression',
+      AstKey.OPERAND: node.operand.accept(this),
+      AstKey.OPERATOR: node.operator.toString()
     };
   }
 
@@ -213,7 +216,51 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   Map visitListLiteral(ListLiteral node) {
     var element = accept(node.elements, this);
 
-    return {'node': 'ListLiteral', 'elements': element};
+    return {AstKey.NODE: 'ListLiteral', AstKey.ELEMENTS: element};
+  }
+
+  @override
+  Map visitSimpleFormalParameter(SimpleFormalParameter node) {
+    var type = node.type?.accept(this);
+    var name = node.identifier?.name;
+
+    return {AstKey.NODE: 'SimpleFormalParameter', AstKey.TYPE: type, AstKey.NAME: name};
+  }
+
+  @override
+  Map visitReturnStatement(ReturnStatement node) {
+    var expression = node.expression?.accept(this);
+    return {AstKey.NODE: AstName.ReturnStatement.name, AstKey.EXPRESSION: expression};
+  }
+
+  @override
+  Map visitArgumentList(ArgumentList node) {
+    return {
+      AstKey.NODE: AstName.ArgumentList.name,
+      AstKey.ARGUMENT_LIST: accept(node.arguments, this)
+    };
+  }
+
+  @override
+  Map visitNamedExpression(NamedExpression node) {
+    var id = node.name.accept(this);
+    var expression = node.expression.accept(this);
+
+    return {
+      AstKey.NODE: AstName.NamedExpression.name,
+      AstKey.ID: id,
+      AstKey.EXPRESSION: expression
+    };
+  }
+
+  @override
+  Map? visitLabel(Label node) {
+    return node.label.accept(this);
+  }
+
+  @override
+  Map visitSimpleStringLiteral(SimpleStringLiteral node) {
+    return {AstKey.NODE: AstName.StringLiteral.name, AstKey.VALUE: node.value};
   }
 
   List<Map> accept(NodeList<AstNode> elements, AstVisitor visitor) {

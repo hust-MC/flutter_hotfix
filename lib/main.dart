@@ -1,3 +1,4 @@
+import 'package:dyna_flutter/builder/dyna_block.dart';
 import 'package:flutter/material.dart';
 import 'dyna/dyna_widget.dart';
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+@DynaBlock()
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 

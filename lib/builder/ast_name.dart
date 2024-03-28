@@ -1,0 +1,21 @@
+enum AstName {
+  Identifier,
+  ListLiteral,
+  Annotation,
+  NamedType,
+  SimpleFormalParameter,
+  BlockStatement,
+  ReturnStatement,
+  ArgumentList,
+  NamedExpression,
+  StringLiteral,
+  MethodDeclaration,
+  FunctionExpression,
+  FunctionDeclaration,
+  MethodInvocation,
+  VariableDeclaration,
+  VariableDeclarationList,
+  ClassDeclaration,
+  StringInterpolation,
+  Unit
+}
