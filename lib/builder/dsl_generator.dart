@@ -16,7 +16,8 @@ import 'ast_visitor.dart';
 /// DSL相关注解解析器
 class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
   @override
-  generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
+  generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
     // 注解解析器
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError('@DynBlock can only for classes');
@@ -37,32 +38,32 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
 
     var result;
     var rootExpression = Expression.fromAst(astMap);
-    // var bodyList = rootExpression?.toUnit.body;
-    // if ((bodyList?.length ?? 0) == 0) {
-    //   print('[DynaFlutter] bodyList is null or empty');
-    //   return null;
-    // }
-    // for (var body in bodyList!) {
-    //   if (body?.type == AstName.ClassDeclaration.name) {
-    //     var members = body?.toClassDeclaration.body;
-        // for (var member in members!) {
-          // if (member?.type == AstName.MethodDeclaration.name) {
-          //   var methodBody = member?.toMethodDeclaration.body?.body;
-            // if (methodBody?.isNotEmpty == true &&
-            //     methodBody?.last?.type == AstName.ReturnStatement.name &&
-            //     methodBody?.last?.toReturnStatement.expression != null) {
-            //   if (member?.toMethodDeclaration.name == 'build') {
-            //     print(
-            //         '[DynaFlutter] Find build method successful: ${methodBody?.last?.toReturnStatement}');
-            //     var map = _buildDsl(methodBody?.last?.toReturnStatement.expression);
-            //     var encoder = const JsonEncoder.withIndent(' ');
-            //     result = encoder.convert(map);
-            //   }
-            // }
-          // }
-        // }
-      // }
-    // }
+    var bodyList = rootExpression?.toUnit.body;
+    if ((bodyList?.length ?? 0) == 0) {
+      print('[DynaFlutter] bodyList is null or empty');
+      return null;
+    }
+    for (var body in bodyList!) {
+      if (body?.type == AstName.ClassDeclaration.name) {
+        var members = body?.toClassDeclaration.body;
+        for (var member in members!) {
+          if (member?.type == AstName.MethodDeclaration.name) {
+            var methodBody = member?.toMethodDeclaration.body?.body;
+            if (methodBody?.isNotEmpty == true &&
+                methodBody?.last?.type == AstName.ReturnStatement.name &&
+                methodBody?.last?.toReturnStatement.expression != null) {
+              if (member?.toMethodDeclaration.name == 'build') {
+                print(
+                    '[DynaFlutter] Find build method successful: ${methodBody?.last?.toReturnStatement}');
+                var map = _buildDsl(methodBody?.last?.toReturnStatement.expression);
+                var encoder = const JsonEncoder.withIndent(' ');
+                result = encoder.convert(map);
+              }
+            }
+          }
+        }
+      }
+    }
     print('[DynaFlutter] Build Dsl successful: $result');
     return result;
   }
@@ -76,7 +77,7 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
     var methodInvocationExpression = widgetExpression?.toMethodInvocation;
 
     // 1、处理根节点名称
-    if (methodInvocationExpression?.target?.type == AstName.NamedType.name) {
+    if (methodInvocationExpression?.target?.type == AstName.Identifier.name) {
       dslMap.putIfAbsent(
           AstKey.WIDGET, () => methodInvocationExpression?.target?.toIdentifier.name);
     }
@@ -109,6 +110,19 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
         posParams.add(posValue);
       }
     }
+
+    // 3、组装DslMap
+    var params = {};
+    if (posParams.isNotEmpty) {
+      params.putIfAbsent(AstKey.DSL_POS, () => posParams);
+    }
+
+    if (nameParams.isNotEmpty) {
+      params.putIfAbsent(AstKey.DSL_NAME, () => nameParams);
+    }
+
+    dslMap.putIfAbsent(AstKey.DSL_PARAMS, () => params);
+    return dslMap;
   }
 
   dynamic _buildValueExpression(Expression? valueExpression) {
@@ -145,6 +159,7 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
     } else {
       // 统计不支持的Node的使用率
       print('[DynaFlutter] not support: $valueExpression');
+      nameParams = _buildDsl(valueExpression);
     }
     return nameParams;
   }

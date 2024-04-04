@@ -31,7 +31,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   @override
   Map visitFunctionExpression(FunctionExpression node) {
     return {
-      AstKey.NODE: 'FunctionExpression',
+      AstKey.NODE: AstName.FunctionExpression.name,
       AstKey.PARAMETERS: node.parameters?.accept(this),
       AstKey.BODY: node.body.accept(this),
       AstKey.IS_ASYNC: node.body.isAsynchronous
@@ -41,7 +41,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   @override
   Map visitBlock(Block node) {
     var statements = accept(node.statements, this);
-    return {AstKey.NODE: 'Block', AstKey.STATEMENTS: statements};
+    return {AstKey.NODE: AstName.BlockStatement.name, AstKey.STATEMENTS: statements};
   }
 
   @override
@@ -139,7 +139,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var argumentList = node.argumentList.accept(this);
 
     return {
-      AstKey.NODE: 'MethodInvocation',
+      AstKey.NODE: AstName.MethodInvocation.name,
       AstKey.METHOD: method,
       AstKey.TYPE_ARGUMENTS: typeArguments,
       AstKey.ARGUMENT_LIST: argumentList

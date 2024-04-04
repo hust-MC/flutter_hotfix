@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Flutter 动态化课程'),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -97,12 +97,12 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
+          children: const <Widget>[
+            Text(
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              'Count',
               // style: Theme.of(context).textTheme.headline4,
             ),
           ],

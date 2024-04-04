@@ -33,4 +33,8 @@ class AstKey {
   static const VALUE = 'value';
 
   static const WIDGET = 'widget';
+
+  static const DSL_POS = 'pos';
+  static const DSL_NAME = 'name';
+  static const DSL_PARAMS = 'params';
 }

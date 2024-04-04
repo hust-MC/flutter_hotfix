@@ -24,13 +24,17 @@ class Expression extends AstNode {
 
   Expression(this._expression, Map? ast) : super(ast: ast);
 
+  @override
+  String toString() => _ast?[AstKey.NODE];
+
   // AstNode解析分发器，解析出以Unit节点为根节点的实例化后的AST
   static Expression? fromAst(Map? ast) {
     if (ast == null) {
       return null;
     }
-    print("MLCOG=====Expression from AST type: ${ast[AstKey.NODE]}");
     var astType = ast[AstKey.NODE];
+    print('[DynaFlutter] Current ast type: $astType');
+
     AstNode? expression;
     if (astType == AstName.Unit.name) {
       expression = Unit.fromAst(ast);
@@ -54,8 +58,14 @@ class Expression extends AstNode {
       expression = BlockStatement.fromAst(ast);
     } else if (astType == AstName.StringInterpolation.name) {
       expression = StringInterpolation.fromAst(ast);
+    } else if (astType == AstName.ReturnStatement.name) {
+      expression = ReturnStatement.fromAst(ast);
+    } else if (astType == AstName.NamedExpression.name) {
+      expression = NamedExpression.fromAst(ast);
+    } else if (astType == AstName.StringLiteral.name) {
+      expression = StringLiteral.fromAst(ast);
     } else {
-      print('[Dyna]Expression fromAst: Please check your params');
+      print('[Dyna]Expression fromAst: Please check your params type: $astType');
       return null;
     }
     return Expression(expression, ast);
@@ -111,23 +121,29 @@ class ListLiteral extends AstNode {
   ListLiteral(this.elements, {Map? ast}) : super(ast: ast);
 
   static ListLiteral? fromAst(Map? ast) {
+    print("MCLOG=====ListLiteral? fromAst ast: $ast");
+
     if (ast != null && ast[AstKey.NODE] == AstName.ListLiteral.name) {
       var astElements = ast[AstKey.ELEMENTS];
       var items = <Expression>[];
 
       if (astElements is List) {
         for (var e in astElements) {
+          print("MCLOG=====ListLiteral? fromAst e: $e");
           var expression = Expression.fromAst(e);
           if (expression != null) {
             items.add(expression);
           }
         }
       }
+      print("MCLOG=====ListLiteral? fromAst items: $items");
+
       return ListLiteral(items, ast: ast);
     }
     return null;
   }
 }
+
 
 class StringLiteral extends AstNode {
   String value;
@@ -212,7 +228,8 @@ class NamedExpression extends AstNode {
 
   static NamedExpression? fromAst(Map? ast) {
     if (ast != null && ast[AstKey.NODE] == AstName.NamedExpression.name) {
-      return NamedExpression(ast[AstKey.ID], Expression.fromAst(ast[AstKey.EXPRESSION]));
+      return NamedExpression(
+          Identifier.fromAst(ast[AstKey.ID])?.name, Expression.fromAst(ast[AstKey.EXPRESSION]));
     }
     return null;
   }
@@ -238,9 +255,6 @@ class MethodDeclaration extends AstNode {
       // 解析方法参数列表
       var parameters = <SimpleFormalParameter?>[];
       var astParameters = ast[AstKey.PARAMETERS][AstKey.PARAMETERS];
-      print('MLOG==== MethodDeclaration fromAst: parameters = ${ast[AstKey.PARAMETERS]}');
-
-      print('MLOG==== MethodDeclaration fromAst: astParameters = $astParameters');
 
       if (ast[AstKey.PARAMETERS] != null && astParameters != null) {
         if (astParameters is List) {
@@ -265,6 +279,8 @@ class MethodDeclaration extends AstNode {
 
       // 解析返回值类型
       var returnType = NamedType.fromAst(ast[AstKey.RETURN_TYPE]);
+      print(
+          '[DynaFlutter] MethodDeclaration: name=$name; parameters=$parameters;body=$body; annotations=$annotations; returnType=$returnType');
 
       return MethodDeclaration(name, parameters, body, annotations, ast[AstKey.SOURCE], returnType,
           isAsync: ast[AstKey.IS_ASYNC] as bool, ast: ast);
@@ -328,13 +344,12 @@ class FunctionDeclaration extends AstNode {
 class MethodInvocation extends AstNode {
   Expression? target;
   List<Expression?>? argumentList;
-
   MethodInvocation(this.target, this.argumentList, {Map? ast}) : super(ast: ast);
 
   static MethodInvocation? fromAst(Map? ast) {
     if (ast != null && ast[AstKey.NODE] == AstName.MethodInvocation.name) {
       return MethodInvocation(
-          Expression.fromAst(ast[AstKey.TARGET]), _parseArgumentList(ast[AstKey.ARGUMENT_LIST]),
+          Expression.fromAst(ast[AstKey.METHOD]), _parseArgumentList(ast[AstKey.ARGUMENT_LIST]),
           ast: ast);
     }
     return null;
@@ -401,7 +416,7 @@ class ClassDeclaration extends AstNode {
         members.add(Expression.fromAst(arg));
       }
       return ClassDeclaration(
-          ast[AstKey.ID]?.name, NamedType.fromAst(ast[AstKey.EXTENDS_CLAUSE])?.name, members,
+          Identifier.fromAst(ast[AstKey.ID])?.name, NamedType.fromAst(ast[AstKey.EXTENDS_CLAUSE])?.name, members,
           ast: ast);
     }
     return null;
