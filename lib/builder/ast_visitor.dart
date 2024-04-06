@@ -129,7 +129,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
       method = node.methodName.accept(this);
     } else {
       method = {
-        AstKey.NODE: 'MethodTarget',
+        AstKey.NODE: AstName.MethodTarget.name,
         AstKey.TARGET: node.target?.accept(this),
         AstKey.METHOD_NAME: node.methodName.accept(this)
       };
@@ -198,6 +198,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     return {AstKey.NODE: 'Annotation', AstKey.ID: name, AstKey.ARGUMENT_LIST: argumentList};
   }
 
+  // ${xx}
   @override
   Map visitStringInterpolation(StringInterpolation node) {
     return {AstKey.NODE: 'StringInterpolation', 'sourceString': node.toSource()};
@@ -261,6 +262,117 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   @override
   Map visitSimpleStringLiteral(SimpleStringLiteral node) {
     return {AstKey.NODE: AstName.StringLiteral.name, AstKey.VALUE: node.value};
+  }
+
+  @override
+  Map? visitExpressionStatement(ExpressionStatement node) {
+    return node.expression.accept(this);
+  }
+
+  @override
+  Map? visitVariableDeclarationStatement(VariableDeclarationStatement node) {
+    return node.variables.accept(this);
+  }
+
+  @override
+  Map visitPrefixedIdentifier(PrefixedIdentifier node) {
+    var id = node.identifier.accept(this);
+    var prefix = node.prefix.accept(this);
+
+    return {AstKey.NODE: AstName.PrefixedIdentifier.name, AstKey.ID: id, AstKey.PREFIX: prefix};
+  }
+
+  @override
+  Map? visitFunctionDeclarationStatement(FunctionDeclarationStatement node) {
+    return node.functionDeclaration.accept(this);
+  }
+
+  @override
+  Map visitTypeName(NamedType node) {
+    var name = node.name.name;
+    return {AstKey.NODE: AstName.NamedType.name, AstKey.NAME: name};
+  }
+
+  @override
+  Map? visitInstanceCreationExpression(InstanceCreationExpression node) {
+    Map? method;
+    if (node.constructorName.type2.name is PrefixedIdentifier) {
+      var prefixedIdentifier = node.constructorName.type2.name as PrefixedIdentifier;
+      method = {
+        AstKey.NODE: AstName.MethodTarget.name,
+        AstKey.TARGET: prefixedIdentifier.prefix.accept(this),
+        AstKey.METHOD_NAME: prefixedIdentifier.identifier.accept(this)
+      };
+    } else {
+      method = node.constructorName.type2.name.accept(this);
+    }
+
+    return {
+      AstKey.NODE: AstName.MethodInvocation.name,
+      AstKey.METHOD: method,
+      AstKey.TYPE_ARGUMENTS: null,
+      AstKey.ARGUMENT_LIST: node.argumentList.accept(this)
+    };
+  }
+
+  @override
+  Map visitIntegerLiteral(IntegerLiteral node) {
+    if (node.literal.lexeme.toUpperCase().startsWith('0X')) {
+      return {AstKey.NODE: AstName.StringLiteral.name, AstKey.VALUE: node.literal.lexeme};
+    } else {
+      return {AstKey.NODE: AstName.NumberLiteral.name, AstKey.VALUE: node.value};
+    }
+  }
+
+  @override
+  Map visitDoubleLiteral(DoubleLiteral node) {
+    return {AstKey.NODE: AstName.NumberLiteral.name, AstKey.VALUE: node.value};
+  }
+
+  @override
+  Map visitBooleanLiteral(BooleanLiteral node) {
+    return {AstKey.NODE: AstName.BooleanLiteral.name, AstKey.VALUE: node.value};
+  }
+
+  @override
+  Map visitExpressionFunctionBody(ExpressionFunctionBody node) {
+    var body = node.expression.accept(this);
+
+    return {
+      AstKey.NODE: AstName.BlockStatement.name,
+      AstKey.BODY: [body]
+    };
+  }
+
+  @override
+  Map visitMapLiteralEntry(MapLiteralEntry node) {
+    return {
+      AstKey.NODE: AstName.MapLiteralEntry.name,
+      AstKey.KEY: node.key.accept(this),
+      AstKey.VALUE: node.value.accept(this)
+    };
+  }
+
+  @override
+  Map visitSetOrMapLiteral(SetOrMapLiteral node) {
+    var elements = accept(node.elements, this);
+    return {AstKey.NODE: AstName.SetOrMapLiteral.name, AstKey.ELEMENTS: elements};
+  }
+
+  @override
+  Map visitInterpolationExpression(InterpolationExpression node) {
+    return {
+      AstKey.NODE: AstName.InterpolationExpression.name,
+      AstKey.EXPRESSION: node.expression.accept(this)
+    };
+  }
+
+  @override
+  Map visitPropertyAccess(PropertyAccess node) {
+    return {
+      AstKey.NODE: AstName.PropertyAccess.name,
+      AstKey.EXPRESSION: node.parent.toString()
+    };
   }
 
   List<Map> accept(NodeList<AstNode> elements, AstVisitor visitor) {

@@ -31,6 +31,8 @@ class AstKey {
   static const OPERATOR = 'operator';
   static const ELEMENTS = 'elements';
   static const VALUE = 'value';
+  static const PREFIX = 'prefix';
+  static const KEY = 'key';
 
   static const WIDGET = 'widget';
 

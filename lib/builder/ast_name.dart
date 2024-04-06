@@ -17,5 +17,13 @@ enum AstName {
   VariableDeclarationList,
   ClassDeclaration,
   StringInterpolation,
+  PrefixedIdentifier,
+  MethodTarget,
+  NumberLiteral,
+  BooleanLiteral,
+  MapLiteralEntry,
+  SetOrMapLiteral,
+  InterpolationExpression,
+  PropertyAccess,
   Unit
 }

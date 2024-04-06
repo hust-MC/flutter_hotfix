@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:math';
 
 import 'ast_key.dart';
 import 'ast_name.dart';
@@ -64,6 +65,20 @@ class Expression extends AstNode {
       expression = NamedExpression.fromAst(ast);
     } else if (astType == AstName.StringLiteral.name) {
       expression = StringLiteral.fromAst(ast);
+    } else if (astType == AstName.PrefixedIdentifier.name) {
+      expression = PrefixedIdentifier.fromAst(ast);
+    } else if (astType == AstName.NumberLiteral.name) {
+      expression = NumberLiteral.fromAst(ast);
+    } else if (astType == AstName.BooleanLiteral.name) {
+      expression = BooleanLiteral.fromAst(ast);
+    } else if (astType == AstName.MapLiteralEntry.name) {
+      expression = MapLiteralEntry.fromAst(ast);
+    } else if (astType == AstName.SetOrMapLiteral.name) {
+      expression = SetOrMapLiteral.fromAst(ast);
+    } else if (astType == AstName.InterpolationExpression.name) {
+      expression = InterpolationExpression.fromAst(ast);
+    } else if (astType == AstName.PropertyAccess.name) {
+      expression = PropertyAccess.fromAst(ast);
     } else {
       print('[Dyna]Expression fromAst: Please check your params type: $astType');
       return null;
@@ -100,6 +115,18 @@ class Expression extends AstNode {
   StringLiteral get toStringLiteral => _expression as StringLiteral;
 
   FunctionExpression get toFunctionExpression => _expression as FunctionExpression;
+
+  PrefixedIdentifier get toPrefixedIdentifier => _expression as PrefixedIdentifier;
+
+  NumberLiteral get toNumberLiteral => _expression as NumberLiteral;
+
+  BooleanLiteral get toBooleanLiteral => _expression as BooleanLiteral;
+
+  MapLiteralEntry get toMapLiteralEntry => _expression as MapLiteralEntry;
+
+  InterpolationExpression get toInterpolationExpression => _expression as InterpolationExpression;
+
+  PropertyAccess get toPropertyAccess => _expression as PropertyAccess;
 }
 
 class Identifier extends AstNode {
@@ -143,7 +170,6 @@ class ListLiteral extends AstNode {
     return null;
   }
 }
-
 
 class StringLiteral extends AstNode {
   String value;
@@ -344,6 +370,7 @@ class FunctionDeclaration extends AstNode {
 class MethodInvocation extends AstNode {
   Expression? target;
   List<Expression?>? argumentList;
+
   MethodInvocation(this.target, this.argumentList, {Map? ast}) : super(ast: ast);
 
   static MethodInvocation? fromAst(Map? ast) {
@@ -415,8 +442,8 @@ class ClassDeclaration extends AstNode {
       for (var arg in astMembers) {
         members.add(Expression.fromAst(arg));
       }
-      return ClassDeclaration(
-          Identifier.fromAst(ast[AstKey.ID])?.name, NamedType.fromAst(ast[AstKey.EXTENDS_CLAUSE])?.name, members,
+      return ClassDeclaration(Identifier.fromAst(ast[AstKey.ID])?.name,
+          NamedType.fromAst(ast[AstKey.EXTENDS_CLAUSE])?.name, members,
           ast: ast);
     }
     return null;
@@ -453,6 +480,131 @@ class Unit extends AstNode {
     }
     return null;
   }
+}
+
+class PrefixedIdentifier extends AstNode {
+  String? identifier;
+  String? prefix;
+
+  PrefixedIdentifier(this.identifier, this.prefix, {Map? ast}) : super(ast: ast);
+
+  static PrefixedIdentifier? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.PrefixedIdentifier.name) {
+      return PrefixedIdentifier(
+          Identifier.fromAst(ast[AstKey])?.name, Identifier.fromAst(ast[AstKey.PREFIX])?.name,
+          ast: ast);
+    }
+    return null;
+  }
+}
+
+class NumberLiteral extends AstNode {
+  num? value;
+
+  NumberLiteral(this.value, {Map? ast}) : super(ast: ast);
+
+  static NumberLiteral? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.NumberLiteral.name) {
+      return NumberLiteral(ast[AstKey.VALUE]);
+    }
+    return null;
+  }
+}
+
+class BooleanLiteral extends AstNode {
+  bool? value;
+
+  BooleanLiteral(this.value, {Map? ast}) : super(ast: ast);
+
+  static BooleanLiteral? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.BooleanLiteral.name) {
+      return BooleanLiteral(ast[AstKey.VALUE], ast: ast);
+    }
+    return null;
+  }
+}
+
+class MapLiteralEntry extends AstNode {
+  String? key;
+  Expression? value;
+
+  MapLiteralEntry(this.key, this.value, {Map? ast}) : super(ast: ast);
+
+  static MapLiteralEntry? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.MapLiteralEntry.name) {
+      return MapLiteralEntry(
+          _parseStringValue(ast[AstKey.KEY]), Expression.fromAst((ast[AstKey.VALUE])));
+    }
+    return null;
+  }
+}
+
+class SetOrMapLiteral extends AstNode {
+  Map<String, Expression?>? elements;
+  List<MapLiteralEntry>? listElements;
+
+  SetOrMapLiteral(this.elements, this.listElements, {Map? ast}) : super(ast: ast);
+
+  static SetOrMapLiteral? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.SetOrMapLiteral.name) {
+      var astElement = ast[AstKey.ELEMENTS] as List;
+      var entries = <String, Expression?>{};
+      var lists = <MapLiteralEntry>[];
+
+      for (var e in astElement) {
+        var entry = MapLiteralEntry.fromAst(e);
+        if (entry != null) {
+          entries[entry.key ?? ''] = entry.value;
+          lists.add(entry);
+        }
+      }
+      return SetOrMapLiteral(entries, lists, ast: ast);
+    }
+    return null;
+  }
+}
+
+class InterpolationExpression extends AstNode {
+  String? name;
+
+  InterpolationExpression(this.name, {Map? ast}) : super(ast: ast);
+
+  static InterpolationExpression? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.InterpolationExpression.name) {
+      var n = Identifier.fromAst(ast[AstKey.EXPRESSION]);
+      if (n != null) {
+        return InterpolationExpression(n.name, ast: ast);
+      }
+    }
+    return null;
+  }
+}
+
+class PropertyAccess extends AstNode {
+  String? expression;
+
+  PropertyAccess(this.expression, {Map? ast}) : super(ast: ast);
+
+  static PropertyAccess? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.PropertyAccess.name) {
+      var expressions = ast[AstKey.EXPRESSION].toString().split(' ');
+      var expression = ast[AstKey.EXPRESSION];
+
+      if (expressions.isNotEmpty) {
+        expression = expressions[0];
+      }
+      return PropertyAccess(expression, ast: ast);
+    }
+    return null;
+  }
+}
+
+String _parseStringValue(Map ast) {
+  var result = '';
+  if (ast[AstKey.NODE] == AstName.StringLiteral.name) {
+    result = ast[AstKey.VALUE] as String;
+  }
+  return result;
 }
 
 List<Expression?> _parseArgumentList(Map? ast) {
