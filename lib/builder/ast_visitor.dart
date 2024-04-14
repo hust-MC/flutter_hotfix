@@ -41,7 +41,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
   @override
   Map visitBlock(Block node) {
     var statements = accept(node.statements, this);
-    return {AstKey.NODE: AstName.BlockStatement.name, AstKey.STATEMENTS: statements};
+    return {AstKey.NODE: AstName.BlockStatement.name, AstKey.BODY: statements};
   }
 
   @override
@@ -182,7 +182,7 @@ class AstVisitor extends SimpleAstVisitor<Map> {
     var source = node.toSource();
 
     return {
-      AstKey.NODE: 'FieldDeclaration',
+      AstKey.NODE: AstName.VariableDeclarationList.name,
       AstKey.TYPE: type,
       AstKey.VARIABLES: variables,
       AstKey.ANNOTATIONS: annotations,

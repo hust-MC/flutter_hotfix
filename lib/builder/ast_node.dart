@@ -234,7 +234,7 @@ class BlockStatement extends AstNode {
 
   static BlockStatement? fromAst(Map? ast) {
     if (ast != null && ast[AstKey.NODE] == AstName.BlockStatement.name) {
-      var astBody = ast[AstKey.STATEMENTS] as List;
+      var astBody = ast[AstKey.BODY] as List;
       var bodies = <Expression?>[];
 
       for (var arg in astBody) {
@@ -408,8 +408,9 @@ class VariableDeclarationList extends AstNode {
       this.typeAnnotation, this.declarationList, this.annotationList, this.sourceCode,
       {Map? ast})
       : super(ast: ast);
-
   static VariableDeclarationList? fromAst(Map? ast) {
+    print("MCLOG==== VariableDeclarationList: $ast");
+
     if (ast != null && ast[AstKey.NODE] == AstName.VariableDeclarationList.name) {
       var astDeclarations = ast[AstKey.VARIABLES] as List;
       var declarations = <VariableDeclaration?>[];
@@ -597,6 +598,39 @@ class PropertyAccess extends AstNode {
     }
     return null;
   }
+}
+
+class FieldDeclaration extends AstNode {
+  List<VariableDeclaration?>? fields;
+  List<Annotation?>? metadata;
+
+  FieldDeclaration(this.fields, this.metadata, {Map? ast}) : super(ast: ast);
+
+  static FieldDeclaration? fromAst(Map? ast) {
+    if (ast != null && ast[AstKey.NODE] == AstName.FieldDeclaration.name) {
+      var astAnnotations = ast[AstKey.ANNOTATIONS] as List?;
+      var annotations = <Annotation?>[];
+      if (astAnnotations != null) {
+        for (var anno in astAnnotations) {
+          annotations.add(Annotation.fromAst(anno));
+        }
+      }
+
+      var astVariables = ast[AstKey.VARIABLES] as List?;
+      var variables = <VariableDeclaration?>[];
+      if (astVariables != null) {
+        for (var variable in astVariables) {
+          variables.add(VariableDeclaration.fromAst(variable));
+        }
+      }
+
+      return FieldDeclaration(variables, annotations, ast: ast);
+    }
+    return null;
+  }
+
+  @override
+  Map? toAst() => _ast;
 }
 
 String _parseStringValue(Map ast) {

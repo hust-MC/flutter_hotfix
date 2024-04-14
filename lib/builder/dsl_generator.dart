@@ -72,7 +72,7 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
     var dslMap = {};
     var nameParams = {};
     var posParams = [];
-    print('[DynaFlutter] Start build dsl from: $widgetExpression');
+    print('[DynaFlutter] Start build dsl from: ${widgetExpression?.toAst()}');
 
     var methodInvocationExpression = widgetExpression?.toMethodInvocation;
 
@@ -137,6 +137,9 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
         widgetExpressionList.add(_buildValueExpression(item));
       }
       nameParams = widgetExpressionList;
+    } else if (valueExpression?.type == AstName.PrefixedIdentifier.name) {
+      nameParams =
+      '#(${valueExpression?.toPrefixedIdentifier.prefix ?? ''}.${valueExpression?.toPrefixedIdentifier.identifier ?? ''})';
     } else if (valueExpression?.type == AstName.FunctionExpression.name) {
       var functionValueExpression = valueExpression?.toFunctionExpression;
       if (functionValueExpression?.body != null &&

@@ -25,5 +25,6 @@ enum AstName {
   SetOrMapLiteral,
   InterpolationExpression,
   PropertyAccess,
+  FieldDeclaration,
   Unit
 }
