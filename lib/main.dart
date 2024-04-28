@@ -2,6 +2,10 @@ import 'package:dyna_flutter/builder/dyna_block.dart';
 import 'package:flutter/material.dart';
 import 'dyna/dyna_widget.dart';
 
+// 1、启动首先检查是否有新的patch
+// 2、如果有则下载
+// 3、本地是否有patch，有则直接使用patch
+
 void main() {
   runApp(const MyApp());
 }
@@ -26,7 +30,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: DynaWidget(src: 'assets/dyna/main.json'),
+      home: DynaWidget(),
     );
   }
 }
