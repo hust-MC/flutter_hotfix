@@ -9,10 +9,13 @@ const dynaFileName = 'dyna.json';
 const spKeyVersion = 'version';
 
 // 替换自己电脑端本地/服务端网络IP
-const httpUrl = 'http://192.168.200.172:8080';
+const httpUrl = 'http://192.168.10.3:8080';
 const versionUri = '$httpUrl/version';
 const patchUri = '$httpUrl/patch';
 const assetPath = 'assets/dyna/$dynaFileName';
+
+const dynaBaseJsFileName = 'dyna_core.js';
+const String assetsBaseJsPath = 'assets/dyna/$dynaBaseJsFileName';
 
 File? _dynaFile;
 
@@ -74,12 +77,12 @@ _checkDynaPatch() async {
 
 Future<String?> getDynaSource() async {
   // 检查是否需要下载更新补丁
-  await _checkDynaPatch();
+  // await _checkDynaPatch();
 
-  if (_dynaFile?.existsSync() == true) {
-    return _dynaFile?.readAsString();
-  } else {
+  // if (_dynaFile?.existsSync() == true) {
+  //   return _dynaFile?.readAsString();
+  // } else {
     return await rootBundle.loadString(assetPath);
-  }
+  // }
   return null;
 }

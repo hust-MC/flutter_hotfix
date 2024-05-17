@@ -1,0 +1,101 @@
+{
+ "widget": "Scaffold",
+ "params": {
+  "name": {
+   "appBar": {
+    "widget": "AppBar",
+    "params": {
+     "name": {
+      "title": {
+       "widget": "Text",
+       "params": {
+        "pos": [
+         "Flutter 动态化课程"
+        ]
+       }
+      }
+     }
+    }
+   },
+   "body": {
+    "widget": "Center",
+    "params": {
+     "name": {
+      "child": {
+       "widget": "Column",
+       "params": {
+        "name": {
+         "mainAxisAlignment": "#(MainAxisAlignment.center)",
+         "children": [
+          {
+           "widget": "Text",
+           "params": {
+            "pos": [
+             "You have pushed the button this many times:"
+            ]
+           }
+          },
+          {
+           "widget": "Text",
+           "params": {
+            "pos": [
+             "#($_counter)"
+            ],
+            "name": {
+             "style": {
+              "widget": "TextStyle",
+              "params": {
+               "name": {
+                "fontSize": 40,
+                "color": {
+                 "widget": "Color",
+                 "params": {
+                  "pos": [
+                   "0xffeb4237"
+                  ]
+                 }
+                },
+                "wordSpacing": 0
+               }
+              }
+             }
+            }
+           }
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   },
+   "floatingActionButton": {
+    "widget": "FloatingActionButton",
+    "params": {
+     "name": {
+      "onPressed": "@(_incrementCounter)",
+      "tooltip": "Increment",
+      "child": {
+       "widget": "Icon",
+       "params": {
+        "pos": [
+         {
+          "widget": "IconData",
+          "params": {
+           "pos": [
+            "0xe047"
+           ],
+           "name": {
+            "fontFamily": "MaterialIcons"
+           }
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,4 +1,4 @@
-import 'package:dyna_flutter/dyna/widget_map.dart';
+import 'package:dyna_flutter/dyna/map/widget_map.dart';
 
 class ParamUtils {
   /// 参数转换，统一参数格式

@@ -4,11 +4,11 @@ const methodGet = 'GET';
 const pathPatch = '/patch';
 const pathVersion = '/version';
 
-const int version = 89;
+const int version = 90;
 
 Future<void> main() async {
   // 开启Server网络监听
-  final server = await HttpServer.bind('192.168.200.172', 8080);
+  final server = await HttpServer.bind('192.168.10.3', 8080);
   print('Server listening on ${server.address}: ${server.port}');
 
   // 当有Client访问时

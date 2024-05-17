@@ -10,7 +10,7 @@
        "widget": "Text",
        "params": {
         "pos": [
-         "欢迎来到马超老师的Flutter 动态化课程"
+         "Flutter 动态化课程"
         ]
        }
       }
@@ -25,7 +25,7 @@
        "widget": "Column",
        "params": {
         "name": {
-         "mainAxisAlignment": "#(MainAxisAlignment.)",
+         "mainAxisAlignment": "#(MainAxisAlignment.center)",
          "children": [
           {
            "widget": "Text",
@@ -45,6 +45,23 @@
           }
          ]
         }
+       }
+      }
+     }
+    }
+   },
+   "floatingActionButton": {
+    "widget": "FloatingActionButton",
+    "params": {
+     "name": {
+      "onPressed": "@(_incrementCounter)",
+      "tooltip": "Increment",
+      "child": {
+       "widget": "Icon",
+       "params": {
+        "pos": [
+         "#(Icons.add)"
+        ]
        }
       }
      }

@@ -159,6 +159,8 @@ class DslGenerator extends GeneratorForAnnotation<DynaBlock> {
       nameParams = '#($sourceString)';
     } else if (valueExpression?.type == AstName.ReturnStatement.name) {
       nameParams = _buildValueExpression(valueExpression?.toReturnStatement.expression);
+    } else if (valueExpression?.type == AstName.NumberLiteral.name) {
+      nameParams = valueExpression?.toNumberLiteral.value;
     } else {
       // 统计不支持的Node的使用率
       print('[DynaFlutter] not support: $valueExpression');

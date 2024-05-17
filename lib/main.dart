@@ -5,9 +5,11 @@ import 'dyna/dyna_widget.dart';
 // 1、启动首先检查是否有新的patch
 // 2、如果有则下载
 // 3、本地是否有patch，有则直接使用patch
-
+// 4、需要提前注入JS
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runDyna(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -101,13 +103,13 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
+          children: <Widget>[
+            const Text(
               'You have pushed the button this many times:',
             ),
             Text(
-              'Count',
-              // style: Theme.of(context).textTheme.headline4,
+              '$_counter',
+              style: TextStyle(fontSize: 40, color: Color(0xffeb4237), wordSpacing: 0),
             ),
           ],
         ),
@@ -115,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: const Icon(IconData(0xe047, fontFamily: 'MaterialIcons')),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

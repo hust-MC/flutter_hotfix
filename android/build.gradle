@@ -1,6 +1,21 @@
 buildscript {
     ext.kotlin_version = '1.6.10'
     repositories {
+        mavenLocal()
+        //阿里云maven镜像
+        maven { url '<https://maven.aliyun.com/repository/public>' }
+        //阿里云maven镜像，google maven镜像
+        maven { url '<https://maven.aliyun.com/repository/google>' }
+        //阿里云maven镜像，gradle plugin 镜像
+        maven { url '<https://maven.aliyun.com/repository/gradle-plugin>' }
+        //腾讯云maven镜像
+        maven { url '<https://mirrors.cloud.tencent.com/nexus/repository/maven-public/>'}
+        //华为云maven镜像
+        maven { url '<https://mirrors.huaweicloud.com/repository/maven/>'}
+        //网易maven镜像
+        maven { url '<http://mirrors.163.com/maven/repository/maven-public/>'
+            allowInsecureProtocol true
+        }
         google()
         mavenCentral()
     }
@@ -13,9 +28,28 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
+        //阿里云maven镜像
+        maven { url '<https://maven.aliyun.com/repository/public>' }
+        //阿里云maven镜像，google maven镜像
+        maven { url '<https://maven.aliyun.com/repository/google>' }
+        //阿里云maven镜像，gradle plugin 镜像
+        maven { url '<https://maven.aliyun.com/repository/gradle-plugin>' }
+        //腾讯云maven镜像
+        maven { url '<https://mirrors.cloud.tencent.com/nexus/repository/maven-public/>'}
+        //华为云maven镜像
+        maven { url '<https://mirrors.huaweicloud.com/repository/maven/>'}
+        //网易maven镜像
+        maven { url '<http://mirrors.163.com/maven/repository/maven-public/>'
+            allowInsecureProtocol true
+        }
         google()
         mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
     }
+
 }
 
 rootProject.buildDir = '../build'

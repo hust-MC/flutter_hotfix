@@ -1,11 +1,26 @@
 import 'dart:convert';
 
+import 'package:dyna_flutter/dyna/ParamResovler.dart';
+import 'package:dyna_flutter/dyna/channel/dyna_channel.dart';
 import 'package:dyna_flutter/dyna/param_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../widget/loading_screen.dart';
 import 'dyna_utils.dart';
-import 'widget_map.dart';
+import 'map/widget_map.dart';
+
+
+runDyna(Widget app) async {
+  var script = await rootBundle.loadString(assetsBaseJsPath);
+
+  var map = <dynamic, dynamic>{};
+  map['path'] = script;
+
+  DynaChannel().loadJs(jsonEncode(map)).then((value) {
+    print('[DynaFlutter] load main js successful, run app');
+    runApp(app);
+  });
+}
 
 class DynaWidget extends StatefulWidget {
   DynaWidget({Key? key});
@@ -36,7 +51,7 @@ class DynaState extends State<DynaWidget> {
     return _resolveWidget(widgetTree);
   }
 
-  Widget _resolveWidget(Map source) {
+  dynamic _resolveWidget(Map source) {
     if (source.isEmpty) {
       return Container();
     }
@@ -46,6 +61,9 @@ class DynaState extends State<DynaWidget> {
     var pp = _resolvePosParams(params['pos']);
     var np = _resolveNameParams(params['name']);
     var widgetBlock = widgetMap[name];
+    print(
+        "MCLOG ==== widgetBlock: $widgetBlock; pp: $pp; np: $np; name: $name");
+
     var paramsMap = ParamUtils.transform(pp, np);
     return widgetBlock!(paramsMap);
   }
@@ -56,7 +74,12 @@ class DynaState extends State<DynaWidget> {
       params.forEach((element) {
         if (element is Map) {
           posParams.add(_resolveWidget(element));
-        } else {
+        } else if (element is String) {
+          // 如果是String，那么需要进一步判断自定义标识，并且解析真实属性
+          var result = ParamResolver.resolve(element);
+          posParams.add(result ?? element);
+        }
+        {
           posParams.add(element);
         }
       });
@@ -77,7 +100,12 @@ class DynaState extends State<DynaWidget> {
           nameParams[key] = children;
         } else if (child is Map) {
           nameParams[key] = _resolveWidget(child);
-        } else {
+        } else if (child is String) {
+          // 如果是String，那么需要进一步判断自定义标识，并且解析真实属性
+          var result = ParamResolver.resolve(child);
+          nameParams[key] = result ?? child;
+        }
+        else {
           nameParams[key] = child;
         }
       });

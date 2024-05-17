@@ -492,7 +492,7 @@ class PrefixedIdentifier extends AstNode {
   static PrefixedIdentifier? fromAst(Map? ast) {
     if (ast != null && ast[AstKey.NODE] == AstName.PrefixedIdentifier.name) {
       return PrefixedIdentifier(
-          Identifier.fromAst(ast[AstKey])?.name, Identifier.fromAst(ast[AstKey.PREFIX])?.name,
+          Identifier.fromAst(ast[AstKey.ID])?.name, Identifier.fromAst(ast[AstKey.PREFIX])?.name,
           ast: ast);
     }
     return null;
